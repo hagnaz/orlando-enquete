@@ -80,8 +80,8 @@
     <div class="who-grid">
       <button class="who" data-grupo="vinicius_aline"><b>Vinicius e Aline</b><span>13 perguntas + 3 finais</span></button>
       <button class="who" data-grupo="daniel_cris"><b>Daniel e Cris</b><span>13 perguntas + 3 finais</span></button>
-      <button class="who" data-grupo="valen"><b>Valen (15)</b><span>10 perguntas + 3 finais</span></button>
-      <button class="who" data-grupo="bia"><b>Bia (10)</b><span>10 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="bia"><b>Bia (15)</b><span>11 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="valen"><b>Valen (10)</b><span>11 perguntas + 3 finais</span></button>
     </div>
     <footer>As respostas vão direto pro Vinicius organizar o roteiro. Dá pra responder de novo se mudar de ideia, vale a última.</footer>
   </div>
@@ -170,15 +170,15 @@ var BLOCOS = {
         ["a","Maioria em casa"],["b","Meio a meio"],["c","Maioria fora"]]},
       {id:"b2q9", txt:"Café da manhã", type:"choice", opts:[
         ["a","Sempre em casa antes de sair"],["b","Levar algo pronto pro parque"],["c","Comprar no parque"]]},
-      {id:"b2q10", txt:"A Bia costuma aguentar o dia todo ou ainda precisa de soneca ou pausa? Descrevam", type:"text"},
+      {id:"b2q10", txt:"A Valen costuma aguentar o dia todo ou ainda precisa de pausa ou descanso? Descrevam", type:"text"},
       {id:"b2q11", txt:"Alguma restrição alimentar, alergia ou questão de saúde no núcleo de vocês pro roteiro?", type:"text", optional:true},
       {id:"b2q12", txt:"Quantos dias de descanso total (zero parque) vocês querem no mínimo?", type:"choice", opts:[
         ["1","1"],["2","2"],["3+","3 ou mais"]]},
-      {id:"b2q13", txt:"Topam dividir o grupo (Cris e Bia numa atração calma enquanto Daniel, Valen e o casal fazem a radical)?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
+      {id:"b2q13", txt:"Topam dividir o grupo (Cris e Valen numa atração calma enquanto Daniel, Bia e o casal fazem a radical)?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
     ]
   },
-  valen: {
-    titulo: "Valen",
+  bia: {
+    titulo: "Bia",
     perguntas: [
       {id:"b3q1", txt:"Coloque suas franquias em ordem, da que você MAIS quer pra que menos quer", hint:"Harry Potter, Marvel e super-heróis, Star Wars, Nintendo (Mario e Donkey Kong), Universal Monsters (Dark Universe), Como Treinar o seu Dragão, Jurassic Park, Disney clássico e princesas, Pixar e animação", type:"text"},
       {id:"b3q2", txt:"Montanhas-russas radicais (Velocicoaster, Iron Gwazi, Stardust Racers, Hagrid, Rip Ride Rockit, Tron)", type:"choice", opts:[
@@ -186,10 +186,11 @@ var BLOCOS = {
       {id:"b3q3", txt:"Torres de queda livre (Tower of Terror, Falcon's Fury em Busch Gardens)", type:"choice", opts:[
         ["a","Amo"],["b","Topo"],["c","Não"]]},
       {id:"b3q4", txt:"Você topa andar sozinha na fila do Single Rider (fila separada pra quem anda sozinho, anda muito mais rápido) em algumas atrações?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]},
-      {id:"b3q5", txt:"Em alguns momentos você prefere", type:"choice", opts:[
-        ["a","Andar só com os adultos radicais (Vinicius, Aline, seu pai)"],
-        ["b","Ficar com o grupo todo junto"],
-        ["c","Depende do dia"]]},
+      {id:"b3q5", txt:"Em alguns momentos do dia, com quem você prefere andar?", type:"choice", opts:[
+        ["a","Com os adultos radicais (Vinicius, Aline, seu pai), pra fazer as atrações fortes"],
+        ["b","Com o grupo todo junto"],
+        ["c","Um tempo só com a Valen"],
+        ["d","Depende do dia"]]},
       {id:"b3q6a", txt:"Compras: o que te interessa?", type:"multi", opts:[
         ["roupas","Roupas"],["tenis","Tênis e sneakers"],["franquias","Produtos das franquias"],
         ["beleza","Maquiagem e beleza"],["papelaria","Papelaria"],["nada","Nada"]]},
@@ -203,8 +204,8 @@ var BLOCOS = {
       {id:"b3q10", txt:"Tem alguma coisa que você não quer perder de jeito nenhum nessa viagem?", type:"text", optional:true}
     ]
   },
-  bia: {
-    titulo: "Bia",
+  valen: {
+    titulo: "Valen",
     perguntas: [
       {id:"b4q1", txt:"Qual sua altura hoje, em centímetros? E qual altura você acha que vai ter em janeiro de 2027?", hint:"É o dado que mais define seu roteiro", type:"text"},
       {id:"b4q2", txt:"Montanha-russa", type:"choice", opts:[
@@ -226,7 +227,9 @@ var BLOCOS = {
         ["a","Dia corrido com muita atração"],["b","Dia mais calmo com tempo de piscina"]]},
       {id:"b4q9", txt:"Tem alguma atração que você viu em vídeo e quer MUITO ir?", type:"text", optional:true},
       {id:"b4q10", txt:"Você entra em piscina fria? (janeiro de manhã e de noite é frio e a piscina pode não ser aquecida)", type:"choice", opts:[
-        ["sim","Sim"],["nao","Não"],["maisoumenos","Mais ou menos"]]}
+        ["sim","Sim"],["nao","Não"],["maisoumenos","Mais ou menos"]]},
+      {id:"b4q11", txt:"Tem hora que você quer brincar só com a Bia, sua irmã, sem adulto junto?", type:"choice", opts:[
+        ["sim","Sim, bastante"],["asvezes","Às vezes"],["nao","Não, gosto de ficar perto dos adultos"]]}
     ]
   }
 };
