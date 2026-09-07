@@ -78,10 +78,10 @@
 
   <div id="screen-who">
     <div class="who-grid">
-      <button class="who" data-grupo="vinicius_aline"><b>Vinicius e Aline</b><span>13 perguntas + 3 finais</span></button>
-      <button class="who" data-grupo="daniel_cris"><b>Daniel e Cris</b><span>13 perguntas + 3 finais</span></button>
-      <button class="who" data-grupo="bia"><b>Bia (15)</b><span>11 perguntas + 3 finais</span></button>
-      <button class="who" data-grupo="valen"><b>Valen (10)</b><span>11 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="vinicius_aline"><b>Vinicius e Aline</b><span>16 perguntas + 4 finais</span></button>
+      <button class="who" data-grupo="daniel_cris"><b>Daniel e Cris</b><span>15 perguntas + 4 finais</span></button>
+      <button class="who" data-grupo="bia"><b>Bia (15)</b><span>11 perguntas + 4 finais</span></button>
+      <button class="who" data-grupo="valen"><b>Valen (10)</b><span>11 perguntas + 4 finais</span></button>
     </div>
     <footer>As respostas vão direto pro Vinicius organizar o roteiro. Dá pra responder de novo se mudar de ideia, vale a última.</footer>
   </div>
@@ -114,6 +114,22 @@ var APPS_SCRIPT_URL = "__APPS_SCRIPT_URL__";
 
 var YN = [["sim","Sim"],["nao","Não"],["tantofaz","Tanto faz"]];
 var NOTA05 = [["0","0"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"]];
+var TIER = [
+  ["economico","Econômico, cortar onde der"],
+  ["intermediario","Intermediário, alguns luxos pontuais"],
+  ["premium","Premium, experiência completa"]];
+var OUTROS_PARQUES = [
+  ["seaworld","SeaWorld Orlando"],
+  ["aquatico","Parque aquático (mesmo com janeiro frio)"],
+  ["ksc","Kennedy Space Center"],
+  ["legoland","Legoland"],
+  ["nenhum","Nenhum além dos 7 parques + Busch Gardens"]];
+var FORA_PARQUE = [
+  ["disney_springs","Disney Springs"],
+  ["citywalk","Universal CityWalk"],
+  ["outlet","Outlet (Vineland ou International Premium)"],
+  ["icon_park","ICON Park (roda-gigante, restaurantes)"],
+  ["nenhum","Nenhum, foco total em parque"]];
 
 var BLOCOS = {
   vinicius_aline: {
@@ -147,7 +163,10 @@ var BLOCOS = {
         ["a","Sim, faz parte"],["b","Só no fim da tarde e à noite"],["c","Não"]]},
       {id:"b1q11", txt:"Fotos profissionais (Memory Maker Disney e fotos Universal): topam dividir o custo com a outra família?", type:"choice", opts:YN},
       {id:"b1q12", txt:"Existe algum parque que vocês topariam pular pra descansar, se o grupo concordar? Qual?", type:"text", optional:true},
-      {id:"b1q13", txt:"Topam se separar do grupo em vários momentos (fila de radical enquanto os outros fazem foto e loja) e reencontrar depois?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
+      {id:"b1q13", txt:"Topam se separar do grupo em vários momentos (fila de radical enquanto os outros fazem foto e loja) e reencontrar depois?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]},
+      {id:"b1q14", txt:"Nível de planejamento pra vocês dois", type:"choice", opts:TIER},
+      {id:"b1q15", txt:"Alguém do casal tem limitação física, de mobilidade ou tratamento em curso que eu deva considerar no ritmo do roteiro?", type:"text", optional:true},
+      {id:"b1q16", txt:"Fora dos 7 parques e do Busch Gardens, algum desses vocês fazem questão? (marque quantos quiser)", type:"multi", opts:OUTROS_PARQUES}
     ]
   },
   daniel_cris: {
@@ -171,10 +190,12 @@ var BLOCOS = {
       {id:"b2q9", txt:"Café da manhã", type:"choice", opts:[
         ["a","Sempre em casa antes de sair"],["b","Levar algo pronto pro parque"],["c","Comprar no parque"]]},
       {id:"b2q10", txt:"A Valen costuma aguentar o dia todo ou ainda precisa de pausa ou descanso? Descrevam", type:"text"},
-      {id:"b2q11", txt:"Alguma restrição alimentar, alergia ou questão de saúde no núcleo de vocês pro roteiro?", type:"text", optional:true},
+      {id:"b2q11", txt:"Restrição alimentar, alergia, limitação física ou de mobilidade, ou tratamento em curso em alguém do núcleo de vocês (os 4) que eu deva considerar no roteiro e no ritmo?", type:"text", optional:true},
       {id:"b2q12", txt:"Quantos dias de descanso total (zero parque) vocês querem no mínimo?", type:"choice", opts:[
         ["1","1"],["2","2"],["3+","3 ou mais"]]},
-      {id:"b2q13", txt:"Topam dividir o grupo (Cris e Valen numa atração calma enquanto Daniel, Bia e o casal fazem a radical)?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
+      {id:"b2q13", txt:"Topam dividir o grupo (Cris e Valen numa atração calma enquanto Daniel, Bia e o casal fazem a radical)?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]},
+      {id:"b2q14", txt:"Nível de planejamento pra família de vocês", type:"choice", opts:TIER},
+      {id:"b2q15", txt:"Fora dos 7 parques e do Busch Gardens, algum desses vocês fazem questão? (marque quantos quiser)", type:"multi", opts:OUTROS_PARQUES}
     ]
   },
   bia: {
@@ -240,7 +261,8 @@ var FINAIS = [
   {id:"b5q2", txt:"Busch Gardens em Tampa (melhor parque de montanha-russa da Flórida, 1h15 a 1h30 de carro cada trecho): topam encaixar 1 dia?", type:"choice", opts:[
     ["sim","Sim"],["nao","Não"],["senaocansar","Só se não cansar"]]},
   {id:"b5q3", txt:"Número ideal de dias sem parque nenhum na viagem (descanso ou só compras)", type:"choice", opts:[
-    ["0","0"],["1","1"],["2","2"],["3","3"],["4+","4 ou mais"]]}
+    ["0","0"],["1","1"],["2","2"],["3","3"],["4+","4 ou mais"]]},
+  {id:"b5q4", txt:"Dias fora de parque: o que vocês querem encaixar na viagem? (marque quantos quiser)", type:"multi", opts:FORA_PARQUE}
 ];
 
 var grupo=null, perguntas=[];
