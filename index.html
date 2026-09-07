@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enquete Orlando 2027</title>
+<style>
+  :root{
+    --bg:#fef6ec; --card:#ffffff; --ink:#2b2320; --muted:#7a6f68;
+    --accent:#e8622c; --accent-ink:#fff; --line:#ecdfd0; --ok:#2e7d5b;
+    --sel:#fdece2;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink);
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:20px 16px 64px}
+  header h1{font-size:22px; margin:0 0 4px}
+  header p{color:var(--muted); margin:0 0 20px; font-size:14px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 16px; margin:0 0 14px}
+  .who-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .who{
+    display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:16px 14px; text-align:left; font:inherit; color:inherit; cursor:pointer;
+  }
+  .who b{font-size:16px}
+  .who span{font-size:12px; color:var(--muted)}
+  .who:active{background:var(--sel)}
+  .q{margin:0 0 22px}
+  .q:last-child{margin-bottom:6px}
+  .q .num{color:var(--accent); font-weight:700; margin-right:6px}
+  .q .txt{font-weight:600}
+  .q .hint{display:block; color:var(--muted); font-size:13px; font-weight:400; margin-top:3px}
+  .sub{margin:10px 0 4px; font-size:13px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .opts{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+  .opt{
+    display:flex; gap:10px; align-items:flex-start;
+    border:1px solid var(--line); border-radius:12px; padding:11px 12px; cursor:pointer;
+  }
+  .opt.checked{border-color:var(--accent); background:var(--sel)}
+  .opt input{margin-top:3px; accent-color:var(--accent); flex:0 0 auto}
+  .opt span{flex:1}
+  textarea,input[type=text]{
+    width:100%; font:inherit; color:inherit; background:#fff;
+    border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-top:8px;
+  }
+  textarea{min-height:74px; resize:vertical}
+  .btn{
+    display:block; width:100%; font:inherit; font-weight:700; font-size:17px;
+    background:var(--accent); color:var(--accent-ink); border:0; border-radius:14px;
+    padding:15px; cursor:pointer; margin-top:8px;
+  }
+  .btn[disabled]{opacity:.5}
+  .btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent); font-size:15px; padding:12px}
+  .progress{height:6px; background:var(--line); border-radius:99px; overflow:hidden; margin:0 0 18px}
+  .progress i{display:block; height:100%; background:var(--accent); width:0; transition:width .25s}
+  .err{color:var(--accent); font-size:13px; margin-top:6px; font-weight:600}
+  .done{text-align:center; padding:24px 8px}
+  .done .big{font-size:40px}
+  .done h2{margin:8px 0 6px}
+  .done p{color:var(--muted)}
+  .fallback{margin-top:18px; text-align:left}
+  .fallback textarea{min-height:200px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px}
+  .hidden{display:none !important}
+  footer{color:var(--muted); font-size:12px; text-align:center; margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Enquete Orlando 2027</h1>
+    <p>10 a 25 de janeiro. 10 minutos pra fechar o roteiro sem atrito. Escolha quem vai responder.</p>
+  </header>
+
+  <div id="screen-who">
+    <div class="who-grid">
+      <button class="who" data-grupo="vinicius_aline"><b>Vinicius e Aline</b><span>13 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="daniel_cris"><b>Daniel e Cris</b><span>13 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="valen"><b>Valen (15)</b><span>10 perguntas + 3 finais</span></button>
+      <button class="who" data-grupo="bia"><b>Bia (10)</b><span>10 perguntas + 3 finais</span></button>
+    </div>
+    <footer>As respostas vão direto pro Vinicius organizar o roteiro. Dá pra responder de novo se mudar de ideia, vale a última.</footer>
+  </div>
+
+  <div id="screen-form" class="hidden">
+    <div class="progress"><i id="bar"></i></div>
+    <form id="form"></form>
+    <div id="formerr" class="err hidden">Faltou responder alguma pergunta obrigatória acima.</div>
+    <button class="btn" id="submit">Enviar respostas</button>
+    <button class="btn ghost" id="back">Trocar de pessoa</button>
+  </div>
+
+  <div id="screen-done" class="hidden">
+    <div class="done">
+      <div class="big">✅</div>
+      <h2 id="donetitle">Recebido!</h2>
+      <p id="donemsg">Pode fechar a página. Obrigado!</p>
+      <div id="fallback" class="fallback hidden">
+        <p style="color:var(--accent);font-weight:600">Não consegui confirmar o envio. Copia o texto abaixo e cola no grupo do WhatsApp:</p>
+        <textarea id="fallbacktext" readonly></textarea>
+        <button class="btn ghost" id="copybtn">Copiar texto</button>
+      </div>
+      <button class="btn ghost" id="again" style="margin-top:18px">Responder por outra pessoa</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var APPS_SCRIPT_URL = "__APPS_SCRIPT_URL__";
+
+var YN = [["sim","Sim"],["nao","Não"],["tantofaz","Tanto faz"]];
+var NOTA05 = [["0","0"],["1","1"],["2","2"],["3","3"],["4","4"],["5","5"]];
+
+var BLOCOS = {
+  vinicius_aline: {
+    titulo: "Vinicius e Aline",
+    perguntas: [
+      {id:"b1q1", txt:"Ritmo ideal num dia de parque", type:"choice", dual:["Vinicius","Aline"], opts:[
+        ["a","Abrir e fechar o parque (rope drop de manhã + show noturno)"],
+        ["b","Chegar cedo e sair no meio da tarde"],
+        ["c","Começar mais tarde e ficar até a noite"],
+        ["d","Dia leve, sem meta de atrações"]]},
+      {id:"b1q2", txt:"Pausa no meio do dia (voltar pra casa ou piscina e retornar)", type:"choice", opts:[
+        ["a","Sim, em todo dia de parque"],
+        ["b","Só nos dias mais cheios ou quentes"],
+        ["c","Não precisa, aguento o dia inteiro"]]},
+      {id:"b1q3", txt:"Montanhas-russas intensas (Velocicoaster, Iron Gwazi, Stardust Racers, Tron)", type:"choice", dual:["Vinicius","Aline"], opts:[
+        ["a","Faço todas, quanto mais radical melhor"],
+        ["b","Faço a maioria"],
+        ["c","Só as médias"],
+        ["d","Não curto"]]},
+      {id:"b1q4", txt:"Experiências imersivas e dark rides (Rise of the Resistance, Ministry of Magic, Flight of Passage)", hint:"Nota de interesse de 0 a 5", type:"choice", dual:["Vinicius","Aline"], opts:NOTA05},
+      {id:"b1q5", txt:"Gastronomia e bebida no World Showcase do EPCOT, por dia de EPCOT, só em quiosques e taças", type:"choice", opts:[
+        ["a","Até US$ 60"],["b","US$ 60 a 120"],["c","US$ 120 a 200"],["d","Sem teto, é um dos pontos altos da viagem"]]},
+      {id:"b1q6", txt:"Jantar mais elaborado (signature: Space 220, Toppolino, steakhouse em Disney Springs)", type:"choice", opts:[
+        ["a","Sim, 1 na viagem"],["b","Sim, 2 ou mais"],["c","Não faz falta"]]},
+      {id:"b1q7", txt:"EPCOT Festival of the Arts (arte e comida especial), deve estar rolando na 2ª metade da viagem", hint:"Nota de interesse de 0 a 5", type:"choice", opts:NOTA05},
+      {id:"b1q8", txt:"Compras", type:"choice", opts:[
+        ["a","Quero 1 dia inteiro de outlet"],["b","Meia manhã ou meia tarde de outlet resolve"],
+        ["c","Só um shopping rápido"],["d","Sem interesse"]]},
+      {id:"b1q9", txt:"Passeio de vinho ou degustação fora dos parques (bar de vinhos em Winter Park)", type:"choice", opts:YN},
+      {id:"b1q10", txt:"Bebida alcoólica dentro dos parques durante o dia", type:"choice", opts:[
+        ["a","Sim, faz parte"],["b","Só no fim da tarde e à noite"],["c","Não"]]},
+      {id:"b1q11", txt:"Fotos profissionais (Memory Maker Disney e fotos Universal): topam dividir o custo com a outra família?", type:"choice", opts:YN},
+      {id:"b1q12", txt:"Existe algum parque que vocês topariam pular pra descansar, se o grupo concordar? Qual?", type:"text", optional:true},
+      {id:"b1q13", txt:"Topam se separar do grupo em vários momentos (fila de radical enquanto os outros fazem foto e loja) e reencontrar depois?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
+    ]
+  },
+  daniel_cris: {
+    titulo: "Daniel e Cris",
+    perguntas: [
+      {id:"b2q1", txt:"Energia de vocês num dia de parque", type:"choice", dual:["Daniel","Cris"], opts:[
+        ["a","Alta, aguento abrir e fechar"],["b","Média, preciso de pausa à tarde"],["c","Baixa, prefiro dia mais curto"]]},
+      {id:"b2q2", txt:"Pausa no meio do dia voltando pra casa", type:"choice", opts:[
+        ["a","Essencial"],["b","Desejável nos dias cheios"],["c","Desnecessária"]]},
+      {id:"b2q3", txt:"Orçamento de vocês pra refeições temáticas ou com personagem, por refeição, contando os 4", type:"choice", opts:[
+        ["a","Até US$ 150"],["b","US$ 150 a 300"],["c","US$ 300 a 450"],["d","Acima disso se valer muito a pena"]]},
+      {id:"b2q4", txt:"Quantas refeições com personagem vocês querem no total da viagem?", type:"choice", opts:[
+        ["0","0"],["1","1"],["2","2"],["3+","3 ou mais"]]},
+      {id:"b2q5", txt:"Quais personagens as meninas mais querem encontrar?", type:"text"},
+      {id:"b2q6", txt:"Tolerância a fila em pé sem furar fila", type:"choice", opts:[
+        ["a","Até 30 min"],["b","Até 45 min"],["c","Até 60 min"],["d","Mais de 60 min se a atração valer"]]},
+      {id:"b2q7", txt:"Topam pagar o Lightning Lane Multi Pass (fura-fila da Disney) nos dias de Magic Kingdom e Hollywood Studios? Cerca de US$ 130 a 180 por dia pros 4", type:"choice", opts:[
+        ["a","Sim, nesses 2 dias"],["b","Só se a fila estiver muito alta no dia"],["c","Não"]]},
+      {id:"b2q8", txt:"Cozinhar em casa x comer fora nos 14 dias úteis", type:"choice", opts:[
+        ["a","Maioria em casa"],["b","Meio a meio"],["c","Maioria fora"]]},
+      {id:"b2q9", txt:"Café da manhã", type:"choice", opts:[
+        ["a","Sempre em casa antes de sair"],["b","Levar algo pronto pro parque"],["c","Comprar no parque"]]},
+      {id:"b2q10", txt:"A Bia costuma aguentar o dia todo ou ainda precisa de soneca ou pausa? Descrevam", type:"text"},
+      {id:"b2q11", txt:"Alguma restrição alimentar, alergia ou questão de saúde no núcleo de vocês pro roteiro?", type:"text", optional:true},
+      {id:"b2q12", txt:"Quantos dias de descanso total (zero parque) vocês querem no mínimo?", type:"choice", opts:[
+        ["1","1"],["2","2"],["3+","3 ou mais"]]},
+      {id:"b2q13", txt:"Topam dividir o grupo (Cris e Bia numa atração calma enquanto Daniel, Valen e o casal fazem a radical)?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]}
+    ]
+  },
+  valen: {
+    titulo: "Valen",
+    perguntas: [
+      {id:"b3q1", txt:"Coloque suas franquias em ordem, da que você MAIS quer pra que menos quer", hint:"Harry Potter, Marvel e super-heróis, Star Wars, Nintendo (Mario e Donkey Kong), Universal Monsters (Dark Universe), Como Treinar o seu Dragão, Jurassic Park, Disney clássico e princesas, Pixar e animação", type:"text"},
+      {id:"b3q2", txt:"Montanhas-russas radicais (Velocicoaster, Iron Gwazi, Stardust Racers, Hagrid, Rip Ride Rockit, Tron)", type:"choice", opts:[
+        ["a","Quero fazer todas"],["b","Quero fazer a maioria"],["c","Só as médias"],["d","Prefiro não"]]},
+      {id:"b3q3", txt:"Torres de queda livre (Tower of Terror, Falcon's Fury em Busch Gardens)", type:"choice", opts:[
+        ["a","Amo"],["b","Topo"],["c","Não"]]},
+      {id:"b3q4", txt:"Você topa andar sozinha na fila do Single Rider (fila separada pra quem anda sozinho, anda muito mais rápido) em algumas atrações?", type:"choice", opts:[["sim","Sim"],["nao","Não"]]},
+      {id:"b3q5", txt:"Em alguns momentos você prefere", type:"choice", opts:[
+        ["a","Andar só com os adultos radicais (Vinicius, Aline, seu pai)"],
+        ["b","Ficar com o grupo todo junto"],
+        ["c","Depende do dia"]]},
+      {id:"b3q6a", txt:"Compras: o que te interessa?", type:"multi", opts:[
+        ["roupas","Roupas"],["tenis","Tênis e sneakers"],["franquias","Produtos das franquias"],
+        ["beleza","Maquiagem e beleza"],["papelaria","Papelaria"],["nada","Nada"]]},
+      {id:"b3q6b", txt:"Quanto tempo de shopping ou outlet você quer na viagem?", type:"text"},
+      {id:"b3q7", txt:"Tem alguma loja ou marca específica que você quer visitar em Orlando?", type:"text", optional:true},
+      {id:"b3q8", txt:"Encontrar personagens e tirar foto", type:"choice", opts:[
+        ["quero","Quero"],["tantofaz","Tanto faz"],["pular","Prefiro pular"]]},
+      {id:"b3q9", txt:"À noite você prefere", type:"choice", opts:[
+        ["a","Ficar no parque pro show de fogos e encerramento"],
+        ["b","Sair antes pra descansar ou piscina"]]},
+      {id:"b3q10", txt:"Tem alguma coisa que você não quer perder de jeito nenhum nessa viagem?", type:"text", optional:true}
+    ]
+  },
+  bia: {
+    titulo: "Bia",
+    perguntas: [
+      {id:"b4q1", txt:"Qual sua altura hoje, em centímetros? E qual altura você acha que vai ter em janeiro de 2027?", hint:"É o dado que mais define seu roteiro", type:"text"},
+      {id:"b4q2", txt:"Montanha-russa", type:"choice", opts:[
+        ["a","Gosto das com queda grande"],["b","Gosto das mais suaves"],["c","Não quero montanha-russa nenhuma"]]},
+      {id:"b4q3", txt:"Atração escura e fechada (túnel, sem ver a saída, tipo Piratas do Caribe ou Harry Potter)", type:"choice", opts:[
+        ["a","Tranquilo"],["b","Só se alguém for do meu lado"],["c","Não gosto"]]},
+      {id:"b4q4", txt:"Suas franquias favoritas (pode marcar várias)", type:"multi", opts:[
+        ["princesas","Princesas"],["frozen","Frozen"],["encanto","Encanto"],["moana","Moana"],
+        ["nintendo","Mario e Nintendo"],["hp","Harry Potter"],["pixar","Pixar (Toy Story, Divertida Mente)"],
+        ["starwars","Star Wars"],["dragao","Como Treinar o seu Dragão"],["animais","Animais do Animal Kingdom"]]},
+      {id:"b4q5", txt:"Encontrar personagens pra abraçar e tirar foto", type:"choice", opts:[
+        ["a","Amo, quero muitos"],["b","Alguns"],["c","Não precisa"]]},
+      {id:"b4q6", txt:"Você quer fazer um dia de princesa (roupa e cabelo no salão da Cinderela) ou uma refeição com personagem?", type:"choice", opts:[
+        ["sim","Sim"],["nao","Não"],["talvez","Talvez"]]},
+      {id:"b4q7", txt:"O que te dá medo em parque?", type:"multi", opts:[
+        ["escuro","Escuro"],["altura","Altura"],["barulho","Barulho alto"],["agua","Água te molhando"],
+        ["fantasia","Personagem fantasiado"],["nada","Nada disso"]]},
+      {id:"b4q8", txt:"Você prefere", type:"choice", opts:[
+        ["a","Dia corrido com muita atração"],["b","Dia mais calmo com tempo de piscina"]]},
+      {id:"b4q9", txt:"Tem alguma atração que você viu em vídeo e quer MUITO ir?", type:"text", optional:true},
+      {id:"b4q10", txt:"Você entra em piscina fria? (janeiro de manhã e de noite é frio e a piscina pode não ser aquecida)", type:"choice", opts:[
+        ["sim","Sim"],["nao","Não"],["maisoumenos","Mais ou menos"]]}
+    ]
+  }
+};
+
+var FINAIS = [
+  {id:"b5q1", txt:"Teto de gasto por pessoa em fura-fila (Lightning Lane e Universal Express) na viagem inteira", type:"choice", opts:[
+    ["a","Até US$ 150"],["b","US$ 150 a 350"],["c","US$ 350 a 600"],["d","O que precisar pra não pegar fila"]]},
+  {id:"b5q2", txt:"Busch Gardens em Tampa (melhor parque de montanha-russa da Flórida, 1h15 a 1h30 de carro cada trecho): topam encaixar 1 dia?", type:"choice", opts:[
+    ["sim","Sim"],["nao","Não"],["senaocansar","Só se não cansar"]]},
+  {id:"b5q3", txt:"Número ideal de dias sem parque nenhum na viagem (descanso ou só compras)", type:"choice", opts:[
+    ["0","0"],["1","1"],["2","2"],["3","3"],["4+","4 ou mais"]]}
+];
+
+var grupo=null, perguntas=[];
+var $ = function(s){return document.querySelector(s)};
+
+document.querySelectorAll(".who").forEach(function(b){
+  b.addEventListener("click", function(){ start(b.dataset.grupo) });
+});
+$("#back").addEventListener("click", reset);
+$("#again").addEventListener("click", reset);
+
+function reset(){
+  grupo=null; perguntas=[]; $("#form").innerHTML="";
+  $("#screen-form").classList.add("hidden");
+  $("#screen-done").classList.add("hidden");
+  $("#fallback").classList.add("hidden");
+  $("#screen-who").classList.remove("hidden");
+  $("#formerr").classList.add("hidden");
+  window.scrollTo(0,0);
+}
+
+function start(g){
+  grupo=g;
+  var b=BLOCOS[g];
+  perguntas = b.perguntas.concat(FINAIS);
+  $("#screen-who").classList.add("hidden");
+  $("#screen-form").classList.remove("hidden");
+  renderForm(b.titulo);
+  window.scrollTo(0,0);
+}
+
+function optRow(name,val,label,multi){
+  var t = multi ? "checkbox" : "radio";
+  return '<label class="opt"><input type="'+t+'" name="'+name+'" value="'+val+'">'
+       + '<span>'+label+'</span></label>';
+}
+
+function renderForm(titulo){
+  var f=$("#form"), html='<div class="card"><div class="sub">Bloco de '+titulo+'</div>';
+  perguntas.forEach(function(q,i){
+    html += '<div class="q" data-qid="'+q.id+'">';
+    html += '<div class="txt"><span class="num">'+(i+1)+'.</span>'+q.txt;
+    if(q.hint) html += '<span class="hint">'+q.hint+'</span>';
+    html += '</div>';
+    if(q.type==="text"){
+      html += '<textarea data-field="'+q.id+'"'+(q.optional?'':' data-req="1"')+'></textarea>';
+    } else if(q.type==="multi"){
+      html += '<div class="opts">';
+      q.opts.forEach(function(o){ html += optRow(q.id, o[0], o[1], true) });
+      html += '</div>';
+    } else if(q.dual){
+      q.dual.forEach(function(person){
+        var nm = q.id+"__"+person;
+        html += '<div class="sub">'+person+'</div><div class="opts">';
+        q.opts.forEach(function(o){ html += optRow(nm, o[0], o[1], false) });
+        html += '</div>';
+      });
+    } else {
+      html += '<div class="opts">';
+      q.opts.forEach(function(o){ html += optRow(q.id, o[0], o[1], false) });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  f.innerHTML = html;
+
+  f.addEventListener("change", function(e){
+    var lab = e.target.closest(".opt");
+    if(lab && e.target.type==="radio"){
+      lab.parentNode.querySelectorAll(".opt").forEach(function(x){x.classList.remove("checked")});
+      lab.classList.add("checked");
+    } else if(lab && e.target.type==="checkbox"){
+      lab.classList.toggle("checked", e.target.checked);
+    }
+    updateBar();
+  });
+  f.addEventListener("input", updateBar);
+  updateBar();
+}
+
+function collect(){
+  var out={}, missing=[];
+  perguntas.forEach(function(q){
+    if(q.type==="text"){
+      var el=$('[data-field="'+q.id+'"]'); var v=el.value.trim();
+      if(v) out[q.id]=v; else if(el.dataset.req) missing.push(q.id);
+    } else if(q.type==="multi"){
+      var vals=[].slice.call(document.querySelectorAll('input[name="'+q.id+'"]:checked')).map(function(x){return x.value});
+      if(vals.length) out[q.id]=vals; else missing.push(q.id);
+    } else if(q.dual){
+      q.dual.forEach(function(person){
+        var nm=q.id+"__"+person;
+        var sel=document.querySelector('input[name="'+nm+'"]:checked');
+        if(sel) out[nm]=sel.value; else missing.push(nm);
+      });
+    } else {
+      var s=document.querySelector('input[name="'+q.id+'"]:checked');
+      if(s) out[q.id]=s.value; else missing.push(q.id);
+    }
+  });
+  return {out:out, missing:missing};
+}
+
+function countFields(){
+  var n=0;
+  perguntas.forEach(function(q){ n += q.dual ? q.dual.length : 1 });
+  return n;
+}
+function countAnswered(){
+  var c=collect();
+  return countFields() - c.missing.length;
+}
+function updateBar(){
+  var pct = Math.round(100*countAnswered()/countFields());
+  $("#bar").style.width = pct+"%";
+}
+
+function labelFor(qid, val){
+  var all = perguntas.slice();
+  for(var i=0;i<all.length;i++){
+    var q=all[i], base=qid.split("__")[0];
+    if(q.id===base && q.opts){
+      for(var j=0;j<q.opts.length;j++) if(q.opts[j][0]===val) return q.opts[j][1];
+    }
+  }
+  return val;
+}
+
+function readableText(data){
+  var lines=["ENQUETE ORLANDO 2027 - "+BLOCOS[grupo].titulo, ""];
+  perguntas.forEach(function(q,i){
+    if(q.dual){
+      q.dual.forEach(function(p){
+        var v=data[q.id+"__"+p];
+        lines.push((i+1)+". "+q.txt+" ["+p+"]: "+(v?labelFor(q.id,v):"-"));
+      });
+    } else {
+      var v=data[q.id];
+      if(Array.isArray(v)) v=v.map(function(x){return labelFor(q.id,x)}).join(", ");
+      else if(v && q.opts) v=labelFor(q.id,v);
+      lines.push((i+1)+". "+q.txt+": "+(v||"-"));
+    }
+  });
+  return lines.join("\n");
+}
+
+$("#submit").addEventListener("click", function(){
+  var c=collect();
+  if(c.missing.length){
+    $("#formerr").classList.remove("hidden");
+    var first=document.querySelector('.q[data-qid="'+c.missing[0].split("__")[0]+'"]');
+    if(first) first.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+  $("#formerr").classList.add("hidden");
+  var btn=$("#submit"); btn.disabled=true; btn.textContent="Enviando...";
+
+  var payload={ grupo:grupo, titulo:BLOCOS[grupo].titulo, enviadoEm:new Date().toISOString(), respostas:c.out };
+  var txt=readableText(c.out);
+
+  send(payload).then(function(ok){
+    $("#screen-form").classList.add("hidden");
+    $("#screen-done").classList.remove("hidden");
+    if(ok){
+      $("#donetitle").textContent="Recebido!";
+      $("#donemsg").textContent="Respostas de "+BLOCOS[grupo].titulo+" enviadas. Pode fechar a página.";
+    } else {
+      $("#donetitle").textContent="Quase lá";
+      $("#donemsg").textContent="";
+      $("#fallbacktext").value=txt;
+      $("#fallback").classList.remove("hidden");
+    }
+    window.scrollTo(0,0);
+  });
+});
+
+$("#copybtn") && $("#copybtn").addEventListener("click", function(){
+  var ta=$("#fallbacktext"); ta.select();
+  try{ document.execCommand("copy"); this.textContent="Copiado"; }catch(e){}
+  if(navigator.clipboard) navigator.clipboard.writeText(ta.value).then(function(){},function(){});
+});
+
+function send(payload){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("__APPS")===0){
+    return Promise.resolve(false);
+  }
+  return fetch(APPS_SCRIPT_URL, {
+    method:"POST",
+    body: JSON.stringify(payload)
+  }).then(function(r){ return r.ok; })
+    .catch(function(){
+      // segunda tentativa em no-cors: envia mas não dá pra confirmar
+      return fetch(APPS_SCRIPT_URL, {method:"POST", mode:"no-cors", body:JSON.stringify(payload)})
+        .then(function(){ return true; })
+        .catch(function(){ return false; });
+    });
+}
+</script>
+</body>
+</html>
