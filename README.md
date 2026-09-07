@@ -11,8 +11,8 @@ do grupo e grava numa planilha Google via Google Apps Script.
 
 - Apps Script publicado, URL `/exec` já injetada no `index.html`. Testado ponta a ponta: envio grava linha na aba `respostas`.
 - Repositório: https://github.com/hagnaz/orlando-enquete
-- GitHub Pages: **falta ativar** (Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save).
-- Link final: `https://hagnaz.github.io/orlando-enquete/` — mandar no grupo "Disney 2027".
+- GitHub Pages: **no ar** em https://hagnaz.github.io/orlando-enquete/ (testado ponta a ponta da URL publicada em 07/09/2026, grava na planilha, sem cair no fallback).
+- Mandar o link no grupo "Disney 2027" junto com o material de consulta.
 
 ## Ler as respostas
 
