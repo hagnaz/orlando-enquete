@@ -7,13 +7,12 @@ do grupo e grava numa planilha Google via Google Apps Script.
 - `apps-script.gs` — código do coletor, pra colar em script.google.com.
 - Planilha de respostas: **Orlando 2027 - Respostas Enquete** (Google Drive do Vinicius).
 
-## Passos
+## Status (07/09/2026)
 
-1. **Apps Script**: seguir o cabeçalho de `apps-script.gs`. Copiar a URL `/exec`.
-2. Substituir `__APPS_SCRIPT_URL__` em `index.html` por essa URL.
-3. **GitHub**: criar repositório público vazio, `git push` deste diretório.
-4. **Pages**: Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save.
-5. Link final: `https://<usuario>.github.io/<repo>/` — mandar no grupo "Disney 2027".
+- Apps Script publicado, URL `/exec` já injetada no `index.html`. Testado ponta a ponta: envio grava linha na aba `respostas`.
+- Repositório: https://github.com/hagnaz/orlando-enquete
+- GitHub Pages: **falta ativar** (Settings → Pages → Deploy from a branch → `main` → `/ (root)` → Save).
+- Link final: `https://hagnaz.github.io/orlando-enquete/` — mandar no grupo "Disney 2027".
 
 ## Ler as respostas
 
